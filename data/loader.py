@@ -73,8 +73,8 @@ def filter_data(df: pd.DataFrame, filters: dict) -> pd.DataFrame:
         filtered_df = filtered_df[filtered_df['coordonnees_code_postal'].fillna('').astype(str) == filters['code_postal']]
 
     # Filtre par specialité / type_ps_libelle
-    if filters.get('specialite') and 'type_ps_libelle' in filtered_df.columns:
-        filtered_df = filtered_df[filtered_df['type_ps_libelle'].fillna('').astype(str) == filters['specialite']]
+    if filters.get('specialite') and 'specialite_libelle' in filtered_df.columns:
+        filtered_df = filtered_df[filtered_df['specialite_libelle'].fillna('').astype(str) == filters['specialite']]
     
     
     # Filtre par terme de recherche
@@ -112,49 +112,14 @@ def preprocess_data(data: pd.DataFrame, commune_cache: dict, dept_cache: dict) -
     if data.empty:
         return data
     
-    # Ajouter les coordonnées des communes (seulement si la colonne existe)
-    if 'Libellé de la commune' in data.columns:
-        data['Latitude_Commune'] = data['Libellé de la commune'].map(lambda x: commune_cache.get(str(x), (None, None))[0] if pd.notna(x) else None)
-        data['Longitude_Commune'] = data['Libellé de la commune'].map(lambda x: commune_cache.get(str(x), (None, None))[1] if pd.notna(x) else None)
+    # Ajouter les coordonnées des villes (seulement si la colonne existe)
+    if 'coordonnees_ville' in data.columns:
+        data['Latitude_Ville'] = data['coordonnees_ville'].map(lambda x: commune_cache.get(str(x), (None, None))[0] if pd.notna(x) else None)
+        data['Longitude_Ville'] = data['coordonnees_ville'].map(lambda x: commune_cache.get(str(x), (None, None))[1] if pd.notna(x) else None)
     else:
         # Si pas de communes, initialiser les colonnes avec des valeurs nulles
-        data['Latitude_Commune'] = None
-        data['Longitude_Commune'] = None
+        data['Latitude_Ville'] = None
+        data['Longitude_Ville'] = None
     
-    # Ajouter les coordonnées des départements (adaptatif selon le type de données)
-    dept_column = None
-    if 'Libellé de la section départementale' in data.columns:
-        dept_column = 'Libellé de la section départementale'
-    elif 'Libellé du département' in data.columns:
-        dept_column = 'Libellé du département'
-    
-    if dept_column:
-        data['Latitude_Dept'] = data[dept_column].map(lambda x: dept_cache.get(x, (None, None))[0] if pd.notna(x) else None)
-        data['Longitude_Dept'] = data[dept_column].map(lambda x: dept_cache.get(x, (None, None))[1] if pd.notna(x) else None)
-    else:
-        # Si pas de départements, initialiser les colonnes avec des valeurs nulles
-        data['Latitude_Dept'] = None
-        data['Longitude_Dept'] = None
-    
-    # Ajouter un décalage aléatoire pour les coordonnées (seulement si elles existent)
-    if 'Latitude_Dept' in data.columns and 'Longitude_Dept' in data.columns:
-        # Vérifier qu'il y a des valeurs non nulles avant d'ajouter le décalage
-        mask_dept = data['Latitude_Dept'].notna() & data['Longitude_Dept'].notna()
-        if mask_dept.any():
-            data.loc[mask_dept, 'Latitude_Dept'] = data.loc[mask_dept, 'Latitude_Dept'] + np.random.normal(0, 0.05, size=mask_dept.sum())
-            data.loc[mask_dept, 'Longitude_Dept'] = data.loc[mask_dept, 'Longitude_Dept'] + np.random.normal(0, 0.05, size=mask_dept.sum())
-    
-    if 'Latitude_Commune' in data.columns and 'Longitude_Commune' in data.columns:
-        # Vérifier qu'il y a des valeurs non nulles avant d'ajouter le décalage
-        mask_commune = data['Latitude_Commune'].notna() & data['Longitude_Commune'].notna()
-        if mask_commune.any():
-            data.loc[mask_commune, 'Latitude_Commune'] = data.loc[mask_commune, 'Latitude_Commune'] + np.random.normal(0, 0.001, size=mask_commune.sum())
-            data.loc[mask_commune, 'Longitude_Commune'] = data.loc[mask_commune, 'Longitude_Commune'] + np.random.normal(0, 0.001, size=mask_commune.sum())
-    
-    # Remplacer les valeurs manquantes par 0 pour les coordonnées
-    coord_cols = ['Latitude_Dept', 'Longitude_Dept', 'Latitude_Commune', 'Longitude_Commune']
-    for col in coord_cols:
-        if col in data.columns:
-            data[col] = data[col].fillna(0)
     
     return data 
