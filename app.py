@@ -42,9 +42,9 @@ def main():
     # Création des onglets
     #tab1, tab2, tab3, tab4 = st.tabs(["Carte", "Visualisations", "Tableau de données", "À propos"])
 
-    tab3, tab4 = st.tabs(["Tableau de données", "À propos"])
-    #with tab1:
-    #    display_map(filtered_df)
+    tab1, tab3, tab4 = st.tabs(["Carte","Tableau de données", "À propos"])
+    with tab1:
+        display_map(filtered_df)
     
     # with tab2:
     #    st.header("Visualisations")

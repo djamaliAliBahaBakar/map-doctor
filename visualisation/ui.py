@@ -88,19 +88,18 @@ def display_filters(df: pd.DataFrame):
 def display_about():
     """Affiche la section À propos"""
     st.markdown("""
-    Cette application permet d'explorer le Répertoire National des Élus (RNE) - une base de données 
-    des élus en France. Elle offre des fonctionnalités de filtrage, de visualisation et d'analyse
+    Cette application permet d'explorer les médecins dans le territoire français.
+    Elle offre des fonctionnalités de filtrage, de visualisation et d'analyse
     de données.
     
     ### Source des données
-    Les données proviennent du site [data.gouv.fr](https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/),
+    Les données proviennent du site [data.gouv.fr](https://www.data.gouv.fr/organizations/caisse-nationale-de-lassurance-maladie),
     qui est la plateforme de données ouvertes du gouvernement français.
     
     ### Fonctionnalités
-    - Filtrage par département, genre et recherche textuelle
+    - Filtrage par ville, genre et recherche textuelle
     - Visualisation de la répartition par genre
-    - Analyse du nombre d'élus par département
-    - Carte interactive des élus
+    - Carte interactive des médecins
     - Tableau interactif des résultats filtrés
     
     ### Développé avec

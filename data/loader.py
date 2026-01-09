@@ -39,16 +39,14 @@ def load_coords_cache(cache_file: str) -> dict:
     '''
     try:
         # Lire le fichier CSV
-        df = pd.read_csv(cache_file, encoding='utf8')
-
+        df = pd.read_csv(cache_file, encoding='utf8',sep=';')
         # Creer le dictionnaire {code postale : {lat,lon)}}
         coords_dict = {}
         for _, row in df.iterrows():
-            coords_dict[row['code_postale']] = (row['lat'], row['lon'])
+            coords_dict[row['code_postal']] = (row['lat'], row['lon'])
         st.success(f"✅ {len(df)} communes chargées depuis {cache_file}")
         return coords_dict
     except Exception as e:
-
         st.warning(f"Erreur lors du chargement du cache {cache_file} : {str(e)}")
         if 'dept' in cache_file.lower():
             return DEFAULT_DEPT_COORDS
@@ -122,8 +120,11 @@ def preprocess_data(data: pd.DataFrame, ville_cache: dict) -> pd.DataFrame:
     
     # Ajouter les coordonnées des villes (seulement si la colonne existe)
     if 'coordonnees_code_postal' in data.columns:
-        data['Latitude_Ville'] = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[0] if pd.notna(x) else None)
-        data['Longitude_Ville'] = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[1] if pd.notna(x) else None)
+        latitude = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[0] if pd.notna(x) else None)
+        longitude = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[1] if pd.notna(x) else None)
+        print(f"Latitude: {latitude}, Longitude {longitude}" )
+        data['Latitude_Ville'] = latitude
+        data['Longitude_Ville'] = longitude
     else:
         # Si pas de code postal ville, initialiser les colonnes avec des valeurs nulles
         data['Latitude_Ville'] = None
