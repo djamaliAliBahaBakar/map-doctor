@@ -15,7 +15,6 @@ COMMUNE_COORDS_CACHE = "commune_coords_cache.json"
 COLONNES_PRINCIPALES = [
     'ps_activite_nom',
     'ps_activite_prenom',
-    'Libellé de la commune',
     'coordonnees_ville'
 ]
 

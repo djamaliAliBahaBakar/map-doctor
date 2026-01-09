@@ -38,9 +38,17 @@ def load_coords_cache(cache_file: str) -> dict:
     Charge les coordonnées depuis le fichier de cache avec mise en cache Streamlit
     '''
     try:
-        with open(cache_file, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        # Lire le fichier CSV
+        df = pd.read_csv(cache_file, encoding='utf8')
+
+        # Creer le dictionnaire {code postale : {lat,lon)}}
+        coords_dict = {}
+        for _, row in df.iterrows():
+            coords_dict[row['code_postale']] = (row['lat'], row['lon'])
+        st.success(f"✅ {len(df)} communes chargées depuis {cache_file}")
+        return coords_dict
     except Exception as e:
+
         st.warning(f"Erreur lors du chargement du cache {cache_file} : {str(e)}")
         if 'dept' in cache_file.lower():
             return DEFAULT_DEPT_COORDS
@@ -105,7 +113,7 @@ def filter_data(df: pd.DataFrame, filters: dict) -> pd.DataFrame:
     return filtered_df
 
 @st.cache_data
-def preprocess_data(data: pd.DataFrame, commune_cache: dict, dept_cache: dict) -> pd.DataFrame:
+def preprocess_data(data: pd.DataFrame, ville_cache: dict) -> pd.DataFrame:
     """
     Prétraite les données avec mise en cache Streamlit
     """
@@ -113,11 +121,11 @@ def preprocess_data(data: pd.DataFrame, commune_cache: dict, dept_cache: dict) -
         return data
     
     # Ajouter les coordonnées des villes (seulement si la colonne existe)
-    if 'coordonnees_ville' in data.columns:
-        data['Latitude_Ville'] = data['coordonnees_ville'].map(lambda x: commune_cache.get(str(x), (None, None))[0] if pd.notna(x) else None)
-        data['Longitude_Ville'] = data['coordonnees_ville'].map(lambda x: commune_cache.get(str(x), (None, None))[1] if pd.notna(x) else None)
+    if 'coordonnees_code_postal' in data.columns:
+        data['Latitude_Ville'] = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[0] if pd.notna(x) else None)
+        data['Longitude_Ville'] = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[1] if pd.notna(x) else None)
     else:
-        # Si pas de communes, initialiser les colonnes avec des valeurs nulles
+        # Si pas de code postal ville, initialiser les colonnes avec des valeurs nulles
         data['Latitude_Ville'] = None
         data['Longitude_Ville'] = None
     

@@ -33,10 +33,10 @@ def download_button(df: pd.DataFrame):
 def display_stats(df: pd.DataFrame):
     """Affiche les statistiques dans la barre latérale"""
     st.sidebar.header("Statistiques")
-    st.sidebar.metric("Nombre total d'élus", len(df))
+    st.sidebar.metric("Nombre total de médecins", len(df))
     
-    if 'Code sexe' in df.columns:
-        gender_ratio = df['Code sexe'].value_counts(normalize=True).to_dict()
+    if 'ps_activite_civilite' in df.columns:
+        gender_ratio = df['ps_activite_civilite'].value_counts(normalize=True).to_dict()
         male_pct = gender_ratio.get('M', 0) * 100
         female_pct = gender_ratio.get('F', 0) * 100
         st.sidebar.metric("Pourcentage d'hommes", f"{male_pct:.1f}%")
@@ -46,25 +46,25 @@ def display_filters(df: pd.DataFrame):
     """Affiche les filtres dans la barre latérale adaptés au type de données"""
     st.sidebar.header("Filtres")
 
-    # Filtre par département/section départementale (adaptatif)
-    selected_departments = []
-    dept_label = "Départements"
+    # Filtre par Ville (adaptatif)
+    selected_villes = []
+    dept_label = "Ville"
     
-    # Détecter la colonne département appropriée
+    # Détecter la colonne ville appropriée
    
-    if 'Libellé du département' in df.columns:
-        departments = df['Libellé du département'].dropna().astype(str).unique()
-        all_departments = sorted(departments)
-        selected_departments = st.sidebar.multiselect(
+    if 'coordonnees_ville' in df.columns:
+        villes = df['coordonnees_ville'].dropna().astype(str).unique()
+        all_villes = sorted(villes)
+        selected_villes = st.sidebar.multiselect(
             dept_label,
-            options=all_departments,
+            options=all_villes,
             default=[]
         )
     
     # Filtre par genre (toujours présent)
     selected_gender = "Tous"
-    if 'Code sexe' in df.columns:
-        genders = df['Code sexe'].dropna().unique()
+    if 'ps_activite_civilite' in df.columns:
+        genders = df['ps_activite_civilite'].dropna().unique()
         gender_options = ["Tous"] + sorted(genders.tolist())
         selected_gender = st.sidebar.radio(
             "Genre",
@@ -73,11 +73,15 @@ def display_filters(df: pd.DataFrame):
 
     # Filtre de recherche textuelle
     search_term = st.sidebar.text_input(
-        "Rechercher un élu ou une commune",
-        help="Recherche dans les noms, prénoms, communes et cantons"
+        "Rechercher un médecin ou une ville",
+        help="Recherche dans les noms, prénoms, ville"
     )
     
-    return selected_departments, selected_gender, search_term
+    return {
+        'villes' : selected_villes, 
+        'gender': selected_gender, 
+        'search_term' : search_term
+    }
     
 
 

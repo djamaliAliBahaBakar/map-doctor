@@ -6,18 +6,7 @@ import streamlit as st
 import pydeck as pdk
 import pandas as pd
 
-def get_department_column(available_columns):
-    """
-    Détermine quelle colonne utiliser pour les départements selon les données disponibles
-    """
-    # Pour les conseillers régionaux, la colonne s'appelle "Libellé de la section départementale"
-    if 'Libellé de la section départementale' in available_columns:
-        return 'Libellé de la section départementale'
-    # Pour les autres types d'élus
-    elif 'Libellé du département' in available_columns:
-        return 'Libellé du département'
-    else:
-        return None
+
 
 def create_map(df: pd.DataFrame):
     """
@@ -27,9 +16,7 @@ def create_map(df: pd.DataFrame):
         # Vérifier les colonnes disponibles
         available_columns = df.columns.tolist()
         
-        # Déterminer la colonne département appropriée
-        dept_column = get_department_column(available_columns)
-        
+         
         # Colonnes de base nécessaires (adaptatives)
         base_columns = ['Latitude_Dept', 'Longitude_Dept', 'Nom de l\'élu', 'Prénom de l\'élu']
         if dept_column:
@@ -194,8 +181,8 @@ def display_map(df: pd.DataFrame):
     """
     Affiche la carte dans l'application
     """
-    st.header("Carte des Élus")
-    st.caption("Note: Les coordonnées sont approximatives basées sur les départements")
+    st.header("Carte des médecins")
+    st.caption("Note: Les coordonnées sont approximatives basées sur les villes")
     deck = create_map(df)
     if deck:
         st.pydeck_chart(deck, use_container_width=True)
