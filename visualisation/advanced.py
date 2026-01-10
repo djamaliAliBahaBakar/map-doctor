@@ -150,7 +150,7 @@ def create_age_pyramid(df: pd.DataFrame) -> Optional[go.Figure]:
 
 def create_profession_analysis(df: pd.DataFrame) -> Optional[go.Figure]:
     """
-    Analyse des professions les plus représentées
+    Analyse des specialités les plus représentées
     """
     if 'Libellé de la catégorie socio-professionnelle' not in df.columns:
         return None

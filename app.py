@@ -40,15 +40,14 @@ def main():
     display_stats(filtered_df)
     
     # Création des onglets
-    #tab1, tab2, tab3, tab4 = st.tabs(["Carte", "Visualisations", "Tableau de données", "À propos"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Carte", "Visualisations", "Tableau de données", "À propos"])
 
-    tab1, tab3, tab4 = st.tabs(["Carte","Tableau de données", "À propos"])
     with tab1:
         display_map(filtered_df)
     
-    # with tab2:
-    #    st.header("Visualisations")
-    #    display_advanced_visualizations(filtered_df)
+    with tab2:
+        st.header("Visualisations")
+        display_advanced_visualizations(filtered_df)
     
     with tab3:
         st.header("Tableau de données")

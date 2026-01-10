@@ -20,8 +20,8 @@ def load_data() -> pd.DataFrame:
             
             # Lire le contenu CSV avec l'encodage approprié
             content = response.content.decode('utf-8', errors='replace')
-            df = pd.read_csv(StringIO(content), sep=";", low_memory=False)
-           
+            df = pd.read_csv(StringIO(content), encoding='utf-8', sep=';', on_bad_lines='skip', low_memory=False)
+            st.success(f"✅ {len(df)} enregistrements chargés depuis l'URL")           
             return df
         
     except requests.exceptions.Timeout:
@@ -43,7 +43,7 @@ def load_coords_cache(cache_file: str) -> dict:
         # Creer le dictionnaire {code postale : {lat,lon)}}
         coords_dict = {}
         for _, row in df.iterrows():
-            coords_dict[row['code_postal']] = (row['lat'], row['lon'])
+            coords_dict[row['code_postal']] = (row['lon'], row['lat'])
         st.success(f"✅ {len(df)} communes chargées depuis {cache_file}")
         return coords_dict
     except Exception as e:
@@ -116,15 +116,25 @@ def preprocess_data(data: pd.DataFrame, ville_cache: dict) -> pd.DataFrame:
     Prétraite les données avec mise en cache Streamlit
     """
     if data.empty:
+        #print("Les données sont vides, aucun prétraitement effectué.")
         return data
     
     # Ajouter les coordonnées des villes (seulement si la colonne existe)
-    if 'coordonnees_code_postal' in data.columns:
-        latitude = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[0] if pd.notna(x) else None)
-        longitude = data['coordonnees_code_postal'].map(lambda x: ville_cache.get(str(x), (None, None))[1] if pd.notna(x) else None)
-        print(f"Latitude: {latitude}, Longitude {longitude}" )
-        data['Latitude_Ville'] = latitude
-        data['Longitude_Ville'] = longitude
+    is_coordonnees_code_postal = 'coordonnees_code_postal' in data.columns
+    if is_coordonnees_code_postal:
+        def get_coordinates(code_postal):
+            if pd.isna(code_postal):
+                return None, None
+            
+            key = str(int(code_postal))
+            
+            # Cherche dans le cache
+            coords = ville_cache.get(key, (None, None))
+            return coords[0], coords[1]  # (latitude, longitude)
+        coordinates = data['coordonnees_code_postal'].apply(get_coordinates)
+        data['Latitude_Ville'] = coordinates.apply(lambda x: x[0])
+        data['Longitude_Ville'] = coordinates.apply(lambda x: x[1])
+      
     else:
         # Si pas de code postal ville, initialiser les colonnes avec des valeurs nulles
         data['Latitude_Ville'] = None
