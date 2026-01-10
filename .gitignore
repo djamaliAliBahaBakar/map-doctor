@@ -2,4 +2,4 @@
 __pycahche__/
 *.pyc
 .DS_Store
-.env
+.envgit gc --prune=now --aggressive
