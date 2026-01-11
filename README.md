@@ -38,11 +38,11 @@ Les données proviennent du site officiel data.gouv.fr
 
 ## 🔧 Technologies utilisées
 
-- Streamlit - Framework d'application web
-- Pandas - Manipulation de données
-- Plotly - Visualisations interactives
-- PyDeck - Cartographie 3D
-- Requests - Chargement de données
+- [Streamlit](https://www.streamlit.io) - Framework d'application web
+- [Pandas](https://www/pandas.pydata.org) - Manipulation de données
+- [Plotly](https://www.plotly.com) - Visualisations interactives
+- [PyDeck](https://www.pydeck.readthedocs.io) - Cartographie 3D
+- [Requests](https://www.readthedocs.io) - Chargement de données
 
 ## 📄 Licence
 Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
