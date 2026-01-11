@@ -13,7 +13,7 @@ from visualisation.ui import (
 )
 from visualisation.advanced import display_advanced_visualizations
 
-def main():
+def main(server_name="0.0.0.0", server_port=8501):
     # Configuration de la page
     setup_page()
     st.title(APP_TITLE)
